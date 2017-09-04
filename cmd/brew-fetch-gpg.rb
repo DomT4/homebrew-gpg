@@ -12,26 +12,20 @@ require "utils"
 # Also, obvious workarounds like if this ever becomes part of Homebrew
 # proper instead of demanding a URL from the user it'll use variables
 # such as `Formula["test"].gpg` to automatically extract that information.
-module Homebrew
+module FetchGpg
   module_function
 
-  def fetch_gpg
-    raise "Arguments cannot be empty!" if ARGV.named.empty?
-    raise "GPG must be installed & available" unless Gpg.gpg || Gpg.gpg2
+  raise "Arguments cannot be empty!" if ARGV.named.empty?
+  raise "GPG must be installed & available" unless Gpg.gpg || Gpg.gpg2
 
-    # This is a bit cheeky & should perhaps be moved elsewhere
-    # until/if this command ever becomes part of Homebrew officially.
-    @gpg_cache = HOMEBREW_CACHE/"gpg_verifications"
-    # This should go away sooner rather than later but want to ensure
-    # the cache is fresh & any failures are legit rather than local
-    # file corruption/etc.
-    FileUtils.rm_rf @gpg_cache
-    @gpg_cache.mkpath
-
-    fetch_and_cache
-    fetch_gpg_url
-    verify_signature_validity
-  end
+  # This is a bit cheeky & should perhaps be moved elsewhere
+  # until/if this command ever becomes part of Homebrew officially.
+  @gpg_cache = HOMEBREW_CACHE/"gpg_verifications"
+  # This should go away sooner rather than later but want to ensure
+  # the cache is fresh & any failures are legit rather than local
+  # file corruption/etc.
+  FileUtils.rm_rf @gpg_cache
+  @gpg_cache.mkpath
 
   def fetch_and_cache
     @formula = Formula[ARGV.first].name.to_s
@@ -68,4 +62,8 @@ module Homebrew
       odie "GPG Verification Failure!"
     end
   end
+
+  fetch_and_cache
+  fetch_gpg_url
+  verify_signature_validity
 end
