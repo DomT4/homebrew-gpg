@@ -16,7 +16,7 @@ module FetchGpg
   module_function
 
   raise "Arguments cannot be empty!" if ARGV.named.empty?
-  raise "GPG must be installed & available" unless Gpg.gpg || Gpg.gpg2
+  raise "GPG must be installed & available" unless Gpg.available?
 
   # This is a bit cheeky & should perhaps be moved elsewhere
   # until/if this command ever becomes part of Homebrew officially.
@@ -48,7 +48,7 @@ module FetchGpg
   end
 
   def verify_signature_validity
-    gpg = Gpg.gpg || Gpg.gpg2
+    gpg = Gpg.executable
     ohai "Verifying #{Formula[@formula].stable.url}..."
     quiet_system gpg, "--verify", @cached_sig, @cached_download
 
