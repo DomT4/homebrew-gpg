@@ -3,7 +3,6 @@
 #:    and attempts to verify them using GnuPG.
 
 require "formula"
-require "gpg"
 require "utils"
 
 # Full Disclosure: I wrote this mostly messing around on a project I haven't
@@ -16,7 +15,7 @@ module FetchGpg
   module_function
 
   raise "Arguments cannot be empty!" if ARGV.named.empty?
-  raise "GPG must be installed & available" unless Gpg.available?
+  raise "gnupg must be installed & available" unless Formula["gnupg"].installed?
 
   # This is a bit cheeky & should perhaps be moved elsewhere
   # until/if this command ever becomes part of Homebrew officially.
@@ -48,7 +47,7 @@ module FetchGpg
   end
 
   def verify_signature_validity
-    gpg = Gpg.executable
+    gpg = Formula["gnupg"].opt_bin/"gpg"
     ohai "Verifying #{Formula[@formula].stable.url}..."
     quiet_system gpg, "--verify", @cached_sig, @cached_download
 
